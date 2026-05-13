@@ -1,6 +1,10 @@
 // import React from 'react';
 
-const Reviews = () => {
+import { use } from "react";
+
+const Reviews = ({reviewsPromise}) => {
+    const review=use(reviewsPromise)
+    console.log(review)
     return (
         <div>
             

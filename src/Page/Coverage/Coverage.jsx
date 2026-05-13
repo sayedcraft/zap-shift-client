@@ -2,9 +2,12 @@
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
+import { useLoaderData } from "react-router";
 
 const Coverage = () => {
   const position = [23.685, 90.3563];
+  const service = useLoaderData();
+  console.log(service);
 
   return (
     <div>
@@ -21,11 +24,13 @@ const Coverage = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <Marker position={position}>
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
-          </Marker>
+          {service.map((center, index) => (
+            <Marker key={index} position={[center.latitude, center.longitude]}>
+              <Popup>
+                <strong>{center.district}</strong>
+              </Popup>
+            </Marker>
+          ))}
         </MapContainer>
       </div>
     </div>

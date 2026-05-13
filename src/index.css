@@ -2,6 +2,18 @@
 @import "tailwindcss";
 @import "daisyui/daisyui.css";
 
+@plugin "daisyui" {
+  themes: light --default;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+
+  --color-primary: #caeb66;
+  --color-secondary: #03373d;
+}
+
 body {
   font-family: "Urbanist", sans-serif;
   font-optical-sizing: auto;

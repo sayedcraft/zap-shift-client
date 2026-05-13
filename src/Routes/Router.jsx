@@ -5,6 +5,8 @@ import Coverage from "../Page/Coverage/Coverage";
 import AuthLayout from "../Layout/AuthLayout";
 import Login from "../Page/Auth/Login";
 import Register from "../Page/Auth/Register";
+import PrivateRoute from "./PrivateRoute";
+import Rider from "../Page/Rider/Rider";
 
 export const router = createBrowserRouter([
   {
@@ -16,24 +18,32 @@ export const router = createBrowserRouter([
         Component: Home,
       },
       {
+        path: "/rider",
+        element: (
+          <PrivateRoute>
+            <Rider></Rider>
+          </PrivateRoute>
+        ),
+      },
+      {
         path: "/coverage",
         Component: Coverage,
-        loader:()=>fetch('/serviceCenter.json').then(res=>res.json())
+        loader: () => fetch("/serviceCenter.json").then((res) => res.json()),
       },
     ],
   },
   {
-    path:'/',
-    Component:AuthLayout,
-    children:[
+    path: "/",
+    Component: AuthLayout,
+    children: [
       {
-        path:'/login',
-        Component:Login
+        path: "/login",
+        Component: Login,
       },
       {
-        path:'/register',
-        Component:Register
-      }
-    ]
-  }
+        path: "/register",
+        Component: Register,
+      },
+    ],
+  },
 ]);

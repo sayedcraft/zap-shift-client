@@ -1,15 +1,22 @@
 // import React from 'react';
 import { useForm, useWatch } from "react-hook-form";
 import { useLoaderData } from "react-router";
+import Swal from "sweetalert2";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import useAuth from "../../Hooks/useAuth";
 
 const SendParcel = () => {
-  const { register, handleSubmit,control } = useForm();
+  const { register, handleSubmit, control } = useForm();
+
+  const {user}=useAuth()
+
+  const axiosSecure = useAxiosSecure()
 
   const serviceCenter = useLoaderData();
   const regionsDuplicate = serviceCenter.map((c) => c.region);
   const regions = [...new Set(regionsDuplicate)];
-  const senderRegion = useWatch({control, name:"senderRegion"});
-  const reciverRegion = useWatch({control, name:"reciverRegion"});
+  const senderRegion = useWatch({ control, name: "senderRegion" });
+  const reciverRegion = useWatch({ control, name: "reciverRegion" });
 
   // console.log(regions);
 
@@ -22,10 +29,54 @@ const SendParcel = () => {
   const handleSendParcel = (data) => {
     console.log(data);
 
-    const sameDistrict= data.senderDistrict===data.reciverDistrict;
-    console.log(sameDistrict);
-    
+    const isDocument = data.parcelType === "document";
+    const isSameDistrict = data.senderDistrict === data.reciverDistrict;
+    const parcelWeight = parseFloat(data.parcelWeight);
 
+    let cost;
+
+    if (isDocument) {
+      cost = isSameDistrict ? 60 : 80;
+    } else {
+      if (parcelWeight < 3) {
+        cost = isSameDistrict ? 110 : 150;
+      } else {
+        const minCharge = isSameDistrict ? 110 : 150;
+        const extraWeight = parcelWeight - 3;
+        const extraCharge = isSameDistrict
+          ? extraWeight * 40
+          : extraWeight * 40 + 40;
+        cost = minCharge + extraCharge;
+      }
+    }
+
+    console.log("cost", cost);
+    Swal.fire({
+      title: "Agree eith the cost",
+      text: `You will be charge ${cost}!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, I agree",
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        // save the parcel info to the database
+        axiosSecure.post('/parcels', data)
+        .then(res=>{
+          console.log('after saving parcel',res);
+          
+        })
+
+
+        // Swal.fire({
+        //   title: "Deleted!",
+        //   text: "Your file has been deleted.",
+        //   icon: "success",
+        // });
+      }
+    });
   };
   return (
     <div>
@@ -88,7 +139,7 @@ const SendParcel = () => {
               type="text"
               {...register("senderName")}
               className="input w-full"
-              placeholder="Sender Name"
+              placeholder="Sender Name" defaultValue={user?.name}
             />
             {/* sender email */}
             <label className="label mt-4">Sender Email</label>
@@ -97,6 +148,7 @@ const SendParcel = () => {
               {...register("senderEmail")}
               className="input w-full"
               placeholder="Sender Email"
+              defaultValue={user?.email}
             />
 
             {/* sender region */}
@@ -194,7 +246,7 @@ const SendParcel = () => {
                 ))}
               </select>
             </fieldset>
-            
+
             {/* reciver add */}
             <label className="label mt-4">Reciver Address</label>
             <input

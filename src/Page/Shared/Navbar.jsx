@@ -22,11 +22,18 @@ const Navbar = () => {
         <NavLink>About Us</NavLink>
       </li>
       <li>
-        <NavLink to='/sendParcel'>Send Parcel</NavLink>
+        <NavLink to="/sendParcel">Send Parcel</NavLink>
       </li>
       <li>
         <NavLink to="/coverage">Coverage</NavLink>
       </li>
+      {user && (
+        <>
+          <li>
+            <NavLink to="/dashboard/myParcel">My Parcel</NavLink>
+          </li>
+        </>
+      )}
     </>
   );
   return (
@@ -75,8 +82,8 @@ const Navbar = () => {
           </Link>
         )}
         <Link className="btn  mx-3" to="/rider">
-            Be a Rider
-          </Link>
+          Be a Rider
+        </Link>
       </div>
     </div>
   );
